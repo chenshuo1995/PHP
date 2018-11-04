@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>登录</title>
+	<style>
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		#btn{
+			width: 150px;
+			height: 50px;
+			text-align: center;
+			line-height: 50px;
+			background: pink;
+			font-size: 28px;
+		}
+	</style>
+</head>
+<body>
+	用户名：<input type="text" id="username"/><br />
+	密码：<input type="password" id="password"/><br />
+	<div id="btn">登录</div>
+	<script src="jquery-1.11.1.min.js"></script>
+	<script>
+		$('#btn').on('click',function(){
+			if($("#username").val() && $("#password").val()){
+				$.ajax({
+					type:"post",
+					url:"login.php",
+					async:true,
+					data:{
+						username:($('#username').val()),
+						password:($('#password').val())
+					},
+					success:function(data){
+						// window.location.href = "index.html";
+						 console.log(data);
+						// if (data =="成功!!") {
+						// 	window.location.href = "index.html";
+						// }
+					}
+				})
+			}
+		})
+	</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>注册</title>
+		<style type="text/css">
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			#btn{
+				width: 150px;
+				height: 50px;
+				text-align: center;
+				line-height: 50px;
+				background: pink;
+				font-size: 28px;
+			}
+		</style>
+	</head>
+	<body>
+		用户名：<input type="text" id="username"/><br />
+		密码：<input type="password" id="password"/><br />
+		年龄：<input type="text" id="age"/><br />
+		money:
+		<input type="text" id="money"/><br />
+		
+		<div id="btn">点击注册</div>
+		
+		<script src="jquery-1.11.1.min.js" type="text/javascript" charset="utf-8"></script>
+		
+		<script type="text/javascript">
+			$("#btn").on("click",function(){
+				
+				if($("#username").val() && $("#password").val() && $("#age").val() && $("#money").val()){
+					
+					$.ajax({
+						type:"post",
+						url:"register.php",
+						async:true,
+						data:{
+							username:$("#username").val(),
+							password:$("#password").val(),
+							age:$("#age").val(),
+							money:$("#money").val()
+						},
+						success:function(data){
+					if(data == "注册成功"){
+						window.location.href = "login.html"; 
+					}else{
+						 $("body").prepend($("<h1>"+data+"</h1>"));
+					}
+						}
+					});
+				}
+			})
+		</script>
+	</body>
+</html>

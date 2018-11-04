@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>webuploader</title>
+	<link rel="stylesheet" href="css/webuploader.css">
+	<style>
+		#filelist>div{
+			width: 100px;
+			height: 100px;
+			position: relative;
+		}
+		#filelist>div img{
+			width: 100%;
+			height: 100%;
+		}
+		.progress{
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0,0,0,.5);
+			text-align: center;
+			font-size: 20px;
+			line-height: 100px;
+			color: #ffffff;
+
+		}
+		.success{
+			margin: 0;
+			position: absolute;
+			left: 0;
+			bottom: 0;
+			width: 100%;
+			height:40px;
+			background: url(img/success.png) right bottom no-repeat;
+		}
+	</style>
+</head>
+<body>
+	<h3>图片上传</h3>
+	<div id="outer">
+		<!-- 创建放置文件的容器 -->
+		<div id="filelist"></div>
+		<!-- 选择文件的按钮 -->
+		<div id="imgpicker"></div>
+		<!-- 创建开始上传的按钮 -->
+		<button id="ctlBtn" class="btn btn-default" style="padding:8px 15px;">开始上传</button>
+	</div>
+	<!-- <script src="http://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script> -->
+	<script src="js/jquery-1.8.3.min.js"></script>
+	<script src="js/webuploader.min.js"></script>
+	<script>
+		var ratio = window.devicePixelRatio || 1;
+		var uploader = WebUploader.create({
+			//引入swf文件
+			swf:"js/Uploader.swf",
+			//设置接受服务端
+			server:"file.php",
+			//设置选择文件的按钮
+			pick:"#imgpicker",
+			//是否对上传图片进行压缩处理
+			resize:false,
+			// 是否在选择文件后自动上传
+			auto:false
+		});
+		uploader.on('fileQueued',function(file){
+			//找到放置图片缩略图的容器
+			var $list = $('#filelist'),
+			$li = $('<div id="' + file.id + '">' +'<img>' +'</div>'),
+			$img = $li.find('img');
+			$list.append($li);
+			uploader.makeThumb( file, function( error, src ) {
+				// 如果报错 将图片转换为span标签 提示用户不能预览
+		        if ( error ) {
+		            $img.replaceWith('<span>不能预览</span>');
+		            return;
+		        }
+		        //获取图片base64编码
+		        $img.attr( 'src', src );
+				
+		    }, 100*ratio, 100*ratio);
+		});
+		//uploadProgress文件上传过程中触发
+		uploader.on('uploadProgress', function(file,percentage) {
+				    var $li = $( '#'+file.id ),
+				        $percent = $li.find('.progress span');
+				
+				    // 避免重复创建
+				    if ( !$percent.length ) {
+				        $percent = $('<p class="progress"><span>0%</span></p>')
+				                .appendTo( $li )
+				                .find('span');
+				    }
+					$percent.text(percentage * 100 + '%');
+				    $percent.css( 'width', percentage * 100 + '%' );
+		});
+
+		//uploadComplete事件 不管图片是否上传成功 在上传完毕后都会执行
+		uploader.on( 'uploadComplete', function( file ) {	
+			// 完成上传完了，成功或者失败，先删除进度条				
+			$( '#'+file.id ).find('.progress').remove();
+		});
+
+		// 文件上传成功，给item添加成功class, 用样式标记上传成功。
+		uploader.on( 'uploadSuccess', function( file,response ) {
+			// console.log(response._raw);
+		    $( '#'+file.id ).append($("<p class='success'></p>"));
+		});
+
+		// 点击开始上传按钮 开始执行上传
+		$('#ctlBtn').on('click',function(){
+			uploader.upload();
+		})
+	</script>
+</body>
+</html>
